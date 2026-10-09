@@ -1,17 +1,37 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.example.objeto.Pedido;
+import org.example.observer.ObservadorAuditoria;
+import org.example.observer.ObservadorEmail;
+import org.example.observer.ObservadorEstoque;
+import org.example.observer.ObservadorPedido;
+import org.example.strategy.DescontoComum;
+import org.example.strategy.DescontoVip;
+import org.example.template.ProcessadorPedido;
+import org.example.template.ProcessadorPedidoDigital;
+import org.example.template.ProcessadorPedidoFisico;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        ObservadorPedido observadorEmail = new ObservadorEmail();
+        ObservadorPedido observadorEstoque = new ObservadorEstoque();
+        ObservadorPedido observadorAuditoria = new ObservadorAuditoria();
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        Pedido pedidoFisico = new Pedido("PED-FISICO-001", 100.0);
+        ProcessadorPedido processadorFisico = new ProcessadorPedidoFisico(new DescontoComum());
+
+        processadorFisico.adicionarObservador(observadorEmail);
+        processadorFisico.adicionarObservador(observadorEstoque);
+        processadorFisico.adicionarObservador(observadorAuditoria);
+
+        processadorFisico.processar(pedidoFisico);
+
+        Pedido pedidoDigital = new Pedido("PED-DIGITAL-999", 100.0);
+        ProcessadorPedido processadorDigital = new ProcessadorPedidoDigital(new DescontoVip());
+
+        processadorDigital.adicionarObservador(observadorEmail);
+        processadorDigital.adicionarObservador(observadorAuditoria);
+
+        processadorDigital.processar(pedidoDigital);
     }
 }
